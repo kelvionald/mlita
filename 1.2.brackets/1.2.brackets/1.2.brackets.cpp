@@ -38,7 +38,7 @@ using namespace std;
 typedef char byte;
 
 struct Line {
-	char str[19];
+	char str[18];
 	byte c1 = 0;
 	byte c2 = 0;
 	byte c3 = 0;
@@ -126,11 +126,48 @@ lines
 	...
 */
 
+inline bool check(char* str, int len) {
+	int c = 0;
+	char stack[18];
+	for (int i = 0; i < len; i++) {
+		char ch = str[i];
+		if (ch == '[' || ch == '(') {
+			stack[c] = ch;
+			c++;
+		}
+		else if (c) {
+			if (ch == ']') {
+				if (stack[c - 1] == '[') {
+					c--;
+				}
+				else {
+					return false;
+				}
+			}
+			else if (ch == ')' && stack[c - 1] == '(') {
+				c--;
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+	if (c) {
+		return false;
+	}
+	return true;
+}
+
 inline void charHit(char ch, int i, int n, Line& line, Line* tmpstack, int& tcounter, bool& changed) {
 	if (i == nPrev) {
 		line.str[i] = ch;
-		_fwrite_nolock(line.str, 1, n, dest);
-		_fwrite_nolock(buffer, 1, 1, dest);
+		if (check(line.str, n)) {
+			_fwrite_nolock(line.str, 1, n, dest);
+			_fwrite_nolock(buffer, 1, 1, dest);
+		}
 	}
 	else {
 		appendLine(line, ch, i);
