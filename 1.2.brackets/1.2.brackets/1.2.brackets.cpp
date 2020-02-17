@@ -33,12 +33,14 @@
 #include <ctime>
 #include <algorithm>
 
+#define MAX_N 18
+
 using namespace std;
 
 typedef char byte;
 
 struct Line {
-	char str[18];
+	char str[MAX_N + 1];
 	byte c1 = 0;
 	byte c2 = 0;
 	byte c3 = 0;
@@ -94,10 +96,10 @@ inline int getMaxLen(int n) {
 }
 
 FILE* dest;
-char buffer[] = { '\n', '\r' };
 int nPrev = 0;
 int nPrevPrev = 0;
 int iNext = 0;
+int nNext = 0;
 
 inline bool check(char* str, int len) {
 	register int c = 0;
@@ -144,8 +146,8 @@ inline void charHit(char ch, int i, int n, Line& line, Line* tmpstack, int& tcou
 			line.str[iNext] = ']';
 		}
 		if (check(line.str, n)) {
-			_fwrite_nolock(line.str, 1, n, dest);
-			_fwrite_nolock(buffer, 1, 1, dest);
+			line.str[n] = '\n';
+			_fwrite_nolock(line.str, 1, nNext, dest);
 		}
 	}
 	else {
@@ -194,6 +196,7 @@ inline void applyRules(Line* fstack, Line* tmpstack, int j, bool smaller, int ha
 void calc(const int n) {
 	nPrev = n - 1;
 	nPrevPrev = n - 2;
+	nNext = n + 1;
 	dest = fopen("output.txt", "wb");
 	constexpr size_t TEST_BUFFER_SIZE = 256 * 1024;
 	setvbuf(dest, nullptr, _IOFBF, TEST_BUFFER_SIZE);
