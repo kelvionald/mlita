@@ -49,7 +49,6 @@ struct Line {
 inline Line createLine(char ch) {
 	Line l;
 	l.str[0] = ch;
-	l.str[1] = '\0';
 	if (ch == '(') {
 		l.c1 = 1;
 		l.openers = 1;
@@ -63,14 +62,13 @@ inline Line createLine(char ch) {
 
 inline void appendLine(Line &l, char ch, int pos) {
 	l.str[pos] = ch;
-	l.str[pos + 1] = '\0';
 	if (ch == '(') { l.c1++; l.openers++; }
 	else if (ch == ')') l.c2++;
 	else if (ch == '[') { l.c3++; l.openers++; }
 	else if (ch == ']') l.c4++;
 }
 
-int assoc[19] = {
+int assoc[] = {
 	0,
 	6,
 	16,
