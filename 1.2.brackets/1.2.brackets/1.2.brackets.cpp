@@ -103,11 +103,12 @@ inline int getMaxLen(int n) {
 FILE* dest;
 char buffer[] = { '\r', '\n' };
 int nPrev = 0;
+int nPrevPrev = 0;
 
 inline void charHit(char ch, int i, int n, Line& line, Line* tmpstack, int& tcounter, bool& changed) {
 	if (i == nPrev) {
 		line.str[i] = ch;
-		_fwrite_nolock(&line, 1, n, dest);
+		_fwrite_nolock(line.str, 1, n, dest);
 		_fwrite_nolock(buffer, 1, 1, dest);
 	}
 	else {
@@ -155,7 +156,7 @@ inline void applyRules(Line* fstack, Line* tmpstack, int j, bool smaller, int ha
 
 void calc(const int n) {
 	nPrev = n - 1;
-	int nPrevPrev = n - 2;
+	nPrevPrev = n - 2;
 	dest = fopen("output.txt", "wb");
 	constexpr size_t TEST_BUFFER_SIZE = 256 * 1024;
 	setvbuf(dest, nullptr, _IOFBF, TEST_BUFFER_SIZE);
@@ -171,6 +172,7 @@ void calc(const int n) {
 	for (int i = 1; i < n; i++)
 	{
 		bool smaller = i < half;
+		bool isNPrevPrev = i == nPrevPrev;
 		for (int j = 0; j < fcounter; j++)
 		{
 			applyRules(fstack, tmpstack, j, smaller, half, i, n, tcounter);
@@ -198,6 +200,7 @@ int main()
 	if (in.is_open())
 	{
 		getline(in, line);
+		in.close();
 		int n;
 		n = atoi(line.c_str());
 		if (n % 2 == 1) {
@@ -208,7 +211,6 @@ int main()
 		calc(n);
 		cout << (std::clock() - start) / (double)CLOCKS_PER_SEC << endl;
 	}
-	in.close();
 	system("pause");
 	return 0;
 }
