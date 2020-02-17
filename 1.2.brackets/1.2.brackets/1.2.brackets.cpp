@@ -100,6 +100,7 @@ int nPrev = 0;
 int nPrevPrev = 0;
 int iNext = 0;
 int nNext = 0;
+bool isInPrevPrev = false;
 
 inline bool check(char* str, int len) {
 	register int c = 0;
@@ -137,7 +138,7 @@ inline bool check(char* str, int len) {
 }
 
 inline void charHit(char ch, int i, int n, Line& line, Line* tmpstack, int& tcounter, bool& changed) {
-	if (i == nPrevPrev) {
+	if (isInPrevPrev) {
 		appendLine(line, ch, i);
 		if (line.c1 - line.c2) {
 			line.str[iNext] = ')';
@@ -211,6 +212,7 @@ void calc(const int n) {
 	int tcounter = 0;
 	for (int i = 1; i < nPrev; i++)
 	{
+		isInPrevPrev = i == nPrevPrev;
 		iNext = i + 1;
 		bool smaller = i < half;
 		bool isNPrevPrev = i == nPrevPrev;
