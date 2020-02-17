@@ -101,9 +101,30 @@ inline int getMaxLen(int n) {
 }
 
 FILE* dest;
-char buffer[] = { '\r', '\n' };
+char buffer[] = { '\n', '\r' };
 int nPrev = 0;
 int nPrevPrev = 0;
+
+/*
+lines
+6
+	7 9
+	24 26
+8
+	9 10
+	12 13
+	27 29
+	43
+	45 46
+	48 49
+	51
+	53 - 56
+	61 62
+	64 65
+	67 69
+	71 - 74
+	...
+*/
 
 inline void charHit(char ch, int i, int n, Line& line, Line* tmpstack, int& tcounter, bool& changed) {
 	if (i == nPrev) {
