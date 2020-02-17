@@ -119,6 +119,40 @@ inline void charHit(char ch, int i, int n, Line& line, Line* tmpstack, int& tcou
 	changed = true;
 }
 
+inline void applyRules(Line* fstack, Line* tmpstack, int j, bool smaller, int half, int i, int n, int& tcounter) {
+	// (
+	bool changed = false;
+	Line line = fstack[j];
+	if (smaller || !(line.openers == half || line.c1 == half)) {
+		charHit('(', i, n, line, tmpstack, tcounter, changed);
+	}
+	// [
+	if (changed) {
+		changed = false;
+		line = fstack[j];
+	}
+	if (smaller || !(line.openers == half || line.c3 == half)) {
+		charHit('[', i, n, line, tmpstack, tcounter, changed);
+	}
+	// )
+	if (changed) {
+		changed = false;
+		line = fstack[j];
+	}
+	char lastCh = line.str[i - 1];
+	if (!(lastCh == '[' || line.c1 - line.c2 == 0)) {
+		charHit(')', i, n, line, tmpstack, tcounter, changed);
+	}
+	// ]
+	if (changed) {
+		line = fstack[j];
+		lastCh = line.str[i - 1];
+	}
+	if (!(lastCh == '(' || line.c3 - line.c4 == 0)) {
+		charHit(']', i, n, line, tmpstack, tcounter, changed);
+	}
+}
+
 void calc(const int n) {
 	nPrev = n - 1;
 	int nPrevPrev = n - 2;
@@ -139,37 +173,7 @@ void calc(const int n) {
 		bool smaller = i < half;
 		for (int j = 0; j < fcounter; j++)
 		{
-			// (
-			bool changed = false;
-			Line line = fstack[j];
-			if (smaller || !(line.openers == half || line.c1 == half)) {
-				charHit('(', i, n, line, tmpstack, tcounter, changed);
-			}
-			// [
-			if (changed) {
-				changed = false;
-				line = fstack[j];
-			}
-			if (smaller || !(line.openers == half || line.c3 == half)) {
-				charHit('[', i, n, line, tmpstack, tcounter, changed);
-			}
-			// )
-			if (changed) {
-				changed = false;
-				line = fstack[j];
-			}
-			char lastCh = line.str[i - 1];
-			if (!(lastCh == '[' || line.c1 - line.c2 == 0)) {
-				charHit(')', i, n, line, tmpstack, tcounter, changed);
-			}
-			// ]
-			if (changed) {
-				line = fstack[j];
-				lastCh = line.str[i - 1];
-			}
-			if (!(lastCh == '(' || line.c3 - line.c4 == 0)) {
-				charHit(']', i, n, line, tmpstack, tcounter, changed);
-			}
+			applyRules(fstack, tmpstack, j, smaller, half, i, n, tcounter);
 		}
 		Line* swap = fstack;
 		fstack = tmpstack;
