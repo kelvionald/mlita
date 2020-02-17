@@ -100,9 +100,15 @@ inline int getMaxLen(int n) {
 	return assoc[n];
 }
 
+FILE* dest;
+char buffer[] = { '\r', '\n' };
+int nPrev = 0;
+
 inline void charHit(char ch, int i, int n, Line& line, Line* tmpstack, int& tcounter, bool& changed) {
-	if (i == n - 1 && false) {
-		//fout << line.str << ch << endl;
+	if (i == nPrev) {
+		line.str[i] = ch;
+		_fwrite_nolock(&line, 1, n, dest);
+		_fwrite_nolock(buffer, 1, 1, dest);
 	}
 	else {
 		appendLine(line, ch, i);
@@ -114,19 +120,18 @@ inline void charHit(char ch, int i, int n, Line& line, Line* tmpstack, int& tcou
 }
 
 void calc(const int n) {
-	int statDrop1 = 0;
-	int statDrop2 = 0;
-	int statDrop3 = 0;
-
-	ofstream fout("output.txt");
-
-	char chars[5] = "([)]";
+	nPrev = n - 1;
+	int nPrevPrev = n - 2;
+	dest = fopen("output.txt", "wb");
+	constexpr size_t TEST_BUFFER_SIZE = 256 * 1024;
+	setvbuf(dest, nullptr, _IOFBF, TEST_BUFFER_SIZE);
 	const int half = n / 2;
 	const int strLen = n + 1;
-	Line* fstack = new Line[getMaxLen(n - 1)]{
+	const int allocSize = getMaxLen(n - 1);
+	Line* fstack = new Line[allocSize] {
 		createLine('('), createLine('[')
 	};
-	Line* tmpstack = new Line[getMaxLen(n - 1)];
+	Line* tmpstack = new Line[allocSize];
 	int fcounter = 2;
 	int tcounter = 0;
 	for (int i = 1; i < n; i++)
@@ -171,7 +176,7 @@ void calc(const int n) {
 		tmpstack = swap;
 		fcounter = tcounter;
 		tcounter = 0;
-		cout << "" << fcounter << ", " << endl;
+		cout << "size: " << fcounter << "" << endl;
 	}
 	if (fcounter < 10) {
 		for (int i = 0; i < fcounter; i++)
@@ -179,7 +184,7 @@ void calc(const int n) {
 			cout << fstack[i].str << endl;
 		}
 	}
-	fout.close();
+	fclose(dest);
 }
 
 int main()
