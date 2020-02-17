@@ -164,15 +164,17 @@ inline void applyRules(Line* fstack, Line* tmpstack, int j, bool smaller, int ha
 	// (
 	bool changed = false;
 	Line line = fstack[j];
-	if (smaller || !(line.openers == half || line.c1 == half)) {
+	bool openerHalf = line.openers == half;
+	if (smaller || !(openerHalf || line.c1 == half)) {
 		charHit('(', i, n, line, tmpstack, tcounter, changed);
 	}
 	// [
 	if (changed) {
 		changed = false;
 		line = fstack[j];
+		openerHalf = line.openers == half;
 	}
-	if (smaller || !(line.openers == half || line.c3 == half)) {
+	if (smaller || !(openerHalf || line.c3 == half)) {
 		charHit('[', i, n, line, tmpstack, tcounter, changed);
 	}
 	// )
