@@ -70,11 +70,6 @@ inline void appendLine(Line &l, char ch, int pos) {
 	else if (ch == ']') l.c4++;
 }
 
-inline int countChar(string str, char ch) {
-	char* start = const_cast<char*>(str.c_str());
-	return count(start, start + str.size(), ch);
-}
-
 int assoc[19] = {
 	0,
 	6,
@@ -104,32 +99,12 @@ FILE* dest;
 char buffer[] = { '\n', '\r' };
 int nPrev = 0;
 int nPrevPrev = 0;
-
-/*
-lines
-6
-	7 9
-	24 26
-8
-	9 10
-	12 13
-	27 29
-	43
-	45 46
-	48 49
-	51
-	53 - 56
-	61 62
-	64 65
-	67 69
-	71 - 74
-	...
-*/
+int iNext = 0;
 
 inline bool check(char* str, int len) {
-	int c = 0;
+	register int c = 0;
 	char stack[18];
-	for (int i = 0; i < len; i++) {
+	for (register int i = 0; i < len; i++) {
 		char ch = str[i];
 		if (ch == '[' || ch == '(') {
 			stack[c] = ch;
@@ -162,8 +137,14 @@ inline bool check(char* str, int len) {
 }
 
 inline void charHit(char ch, int i, int n, Line& line, Line* tmpstack, int& tcounter, bool& changed) {
-	if (i == nPrev) {
-		line.str[i] = ch;
+	if (i == nPrevPrev) {
+		appendLine(line, ch, i);
+		if (line.c1 - line.c2) {
+			line.str[iNext] = ')';
+		}
+		else {
+			line.str[iNext] = ']';
+		}
 		if (check(line.str, n)) {
 			_fwrite_nolock(line.str, 1, n, dest);
 			_fwrite_nolock(buffer, 1, 1, dest);
@@ -227,11 +208,12 @@ void calc(const int n) {
 	Line* tmpstack = new Line[allocSize];
 	int fcounter = 2;
 	int tcounter = 0;
-	for (int i = 1; i < n; i++)
+	for (int i = 1; i < nPrev; i++)
 	{
+		iNext = i + 1;
 		bool smaller = i < half;
 		bool isNPrevPrev = i == nPrevPrev;
-		for (int j = 0; j < fcounter; j++)
+		for (register int j = 0; j < fcounter; j++)
 		{
 			applyRules(fstack, tmpstack, j, smaller, half, i, n, tcounter);
 		}
