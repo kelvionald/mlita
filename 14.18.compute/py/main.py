@@ -38,14 +38,11 @@ def postfix(tokens):
 def getAB(stack, f):
   a = float(stack.pop())
   b = float(stack.pop())
-  print(a, b, f(b, a))
   return f(b, a)
 
 def calc(tokens):
   stack = []
   for t in tokens:
-    if not t.isdigit():
-      print(t)
     if t.isdigit():
       stack.append(t)
     elif t == '-':
