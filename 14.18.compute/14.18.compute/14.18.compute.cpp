@@ -180,7 +180,7 @@ double calculate() {
 			stack.pop_back();
 			double result;
 			char ch = t.value[0];
-			if (DEV) cout << a << b << ch << endl;
+			if (DEV) cout << a << " " << b << " " << ch << endl;
 			if (ch == '-') {
 				result = a - b;
 			}
@@ -214,6 +214,10 @@ int main()
 	string line;
 	ifstream in("input.txt");
 	ofstream out("output.txt");
+	out.precision(4);
+	out.setf(ios::fixed);
+	cout.precision(4);
+	cout.setf(ios::fixed);
 	if (in.is_open())
 	{
 		getline(in, line);
