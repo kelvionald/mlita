@@ -94,12 +94,15 @@ void tokenize(string line)
 		if (isNumber) {
 			tmp += ch;
 		}
-		else if (ch == '-' && prevCh == '(') {
+		else if ((ch == '-' or ch == '+') and prevCh == '(') {
 			tmp += ch;
 			skipBracket = true;
 			tokens.pop_back();
 		}
-		else if(skipBracket && ch == ')') {
+		else if ((ch == '-' or ch == '+') and i == 0) {
+			tmp += ch;
+		}
+		else if(skipBracket and ch == ')') {
 			skipBracket = false;
 		}
 		else {
@@ -201,7 +204,7 @@ double calculate() {
 			stack.pop_back();
 			double result;
 			char ch = t.value[0];
-			if (DEV) cout << a << " " << b << " " << ch << endl;
+			if (DEV) cout << a << " " << ch << " " << b << endl;
 			if (ch == '-') {
 				result = a - b;
 			}

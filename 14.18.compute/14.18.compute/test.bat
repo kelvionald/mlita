@@ -31,6 +31,31 @@ copy "test-data\input-6.txt" "input.txt" > nul
 fc.exe "output.txt" "test-data/output-6.txt" > nul || goto err
 echo Test 6 passed
 
+copy "test-data\input-7.txt" "input.txt" > nul
+%PROGRAM%
+fc.exe "output.txt" "test-data/output-7.txt" > nul || goto err
+echo Test 7 passed
+
+copy "test-data\input-8.txt" "input.txt" > nul
+%PROGRAM%
+fc.exe "output.txt" "test-data/output-8.txt" > nul || goto err
+echo Test 8 passed
+
+copy "test-data\input-9.txt" "input.txt" > nul
+%PROGRAM%
+fc.exe "output.txt" "test-data/output-9.txt" > nul || goto err
+echo Test 9 passed
+
+copy "test-data\input-10.txt" "input.txt" > nul
+%PROGRAM%
+fc.exe "output.txt" "test-data/output-10.txt" > nul || goto err
+echo Test 10 passed
+
+copy "test-data\input-11.txt" "input.txt" > nul
+%PROGRAM%
+fc.exe "output.txt" "test-data/output-11.txt" > nul || goto err
+echo Test 11 passed
+
 echo OK
 exit 0
 
