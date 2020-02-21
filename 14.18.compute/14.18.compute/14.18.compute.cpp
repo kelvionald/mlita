@@ -28,7 +28,7 @@
 
 using namespace std;
 
-#define DEV false
+#define DEV 0
 
 #define and &&
 #define or ||
@@ -43,6 +43,14 @@ struct Token
 typedef vector<Token> Tokens;
 
 Tokens tokens;
+
+void prtTokens(Tokens tokens) {
+	for (int i = 0; i < tokens.size(); i++)
+	{
+		cout << tokens[i].value << " ";
+	}
+	cout << endl;
+}
 
 Token createToken(char ch) {
 	string val;
@@ -77,6 +85,8 @@ void tokenize(string line)
 {
 	string tmp;
 	bool isNumber = false;
+	char prevCh = '\0';
+	bool skipBracket = false;
 	for (int i = 0; i < line.length(); i++)
 	{
 		char ch = line[i];
@@ -84,10 +94,19 @@ void tokenize(string line)
 		if (isNumber) {
 			tmp += ch;
 		}
+		else if (ch == '-' && prevCh == '(') {
+			tmp += ch;
+			skipBracket = true;
+			tokens.pop_back();
+		}
+		else if(skipBracket && ch == ')') {
+			skipBracket = false;
+		}
 		else {
 			addTokenIfFilled(tmp);
 			addToken(createToken(ch));
 		}
+		prevCh = ch;
 	}
 	addTokenIfFilled(tmp);
 }
@@ -123,14 +142,6 @@ void pushing(Tokens& stack, Tokens& result) {
 	}
 }
 
-void prtTokens(Tokens tokens) {
-	for (int i = 0; i < tokens.size(); i++)
-	{
-		cout << tokens[i].value;
-	}
-	cout << endl;
-}
-
 Tokens result;
 
 void postfixier() {
@@ -145,6 +156,12 @@ void postfixier() {
 			stack.push_back(t);
 		}
 		else if (stack.size() != 0 and isSimpleOperator(t) and isSimpleOperator(stack[stack.size() - 1]) and priority(t) > priority(stack[stack.size() - 1])) {
+			stack.push_back(t);
+		}
+		else if (stack.size() != 0 and isSimpleOperator(t) and isSimpleOperator(stack[stack.size() - 1]) and priority(t) == priority(stack[stack.size() - 1])) {
+			Token t2 = stack[stack.size() - 1];
+			stack.pop_back();
+			result.push_back(t2);
 			stack.push_back(t);
 		}
 		else if (isSimpleOperator(t)) {
@@ -162,7 +179,10 @@ void postfixier() {
 		}
 	}
 	pushing(stack, result);
-	if (DEV) prtTokens(result);
+	if (DEV) {
+		cout << "rpn ";
+		prtTokens(result);
+	}
 }
 
 double calculate() {
@@ -221,6 +241,7 @@ int main()
 	if (in.is_open())
 	{
 		getline(in, line);
+		if (DEV) cout << "input ";
 		if (DEV) cout << line << endl;
 		try {
 			out << compute(line);
