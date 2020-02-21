@@ -26,6 +26,11 @@ copy "test-data\input-5.txt" "input.txt" > nul
 fc.exe "output.txt" "test-data/output-5.txt" > nul || goto err
 echo Test 5 passed
 
+copy "test-data\input-6.txt" "input.txt" > nul
+%PROGRAM%
+fc.exe "output.txt" "test-data/output-6.txt" > nul || goto err
+echo Test 6 passed
+
 echo OK
 exit 0
 

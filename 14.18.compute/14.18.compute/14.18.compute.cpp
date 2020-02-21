@@ -103,6 +103,7 @@ void tokenize(string line)
 			skipBracket = false;
 		}
 		else {
+			skipBracket = false;
 			addTokenIfFilled(tmp);
 			addToken(createToken(ch));
 		}
