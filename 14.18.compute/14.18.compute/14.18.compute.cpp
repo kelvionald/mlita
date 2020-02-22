@@ -86,7 +86,6 @@ void tokenize(string line)
 	string tmp;
 	bool isNumber = false;
 	char prevCh = '\0';
-	bool skipBracket = false;
 	for (int i = 0; i < line.length(); i++)
 	{
 		char ch = line[i];
@@ -95,18 +94,14 @@ void tokenize(string line)
 			tmp += ch;
 		}
 		else if ((ch == '-' or ch == '+') and prevCh == '(') {
-			tmp += ch;
-			skipBracket = true;
-			tokens.pop_back();
+			addToken(createToken("0"));
+			addToken(createToken(ch));
 		}
 		else if ((ch == '-' or ch == '+') and i == 0) {
-			tmp += ch;
-		}
-		else if(skipBracket and ch == ')') {
-			skipBracket = false;
+			addToken(createToken("0"));
+			addToken(createToken(ch));
 		}
 		else {
-			skipBracket = false;
 			addTokenIfFilled(tmp);
 			addToken(createToken(ch));
 		}
