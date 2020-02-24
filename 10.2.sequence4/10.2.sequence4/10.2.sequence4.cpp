@@ -5,7 +5,7 @@
 из чисел равно сумме двух других.
 Ввод из файла INPUT.TXT. В первой строке содержится 
 значение n (3 <= n <= 5000). Во второй строке заданы 
-через пробел значения x1, x2, ..., xn  (1 <= xi <= 105).
+через пробел значения x1, x2, ..., xn  (1 <= xi <= 10^5).
 Вывод в файл OUTPUT.TXT. В единственной строке выводится 
 количество указанных троек чисел (xi, xj, xk).
 Примеры
@@ -26,10 +26,11 @@
 #include <vector>
 #include <cmath>
 #include <ctime>
+#include <map>
 
 using namespace std;
 
-#define DEV 0
+#define DEV 1
 #define MAX_IN 105
 
 #define ALG_STUPID 1
@@ -39,9 +40,10 @@ using namespace std;
 
 typedef int t_num;
 typedef vector<t_num> Numbers;
+typedef map<t_num, int> NumbersMap;
 
 Numbers numbers;
-t_num stats[106]{0};
+NumbersMap stats;
 
 void addNumberIfNotEmpty(string& tmp, const int& count) {
 	if (tmp.size() && numbers.size() < count) {
@@ -78,7 +80,7 @@ void sort() {
 }
 
 void calc(ofstream& out) {
-	int counter = 0;
+	register int counter = 0;
 	int length = numbers.size();
 	if (ALG == ALG_STUPID) {
 		for (int i = 0; i < length; i++) {
@@ -102,15 +104,13 @@ void calc(ofstream& out) {
 	}
 	else if (ALG == ALG_SMART) {
 		for (int i = 0; i < length; i++) {
-			for (register int j = i + 1; j < length; j++) {
+			for (int j = i + 1; j < length; j++) {
 				int ni = numbers[i];
 				int nj = numbers[j];
 				int s = ni + nj;
-				if (s <= MAX_IN) {
+				if (stats.find(s) != stats.end())
+				{
 					counter += stats[s];
-				}
-				else {
-					break;
 				}
 			}
 		}
