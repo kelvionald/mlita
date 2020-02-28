@@ -30,8 +30,7 @@
 
 using namespace std;
 
-#define DEV 1
-#define MAX_IN 105
+#define DEV 0
 
 #define ALG_STUPID 1
 #define ALG_SMART 2
@@ -80,7 +79,7 @@ void sort() {
 }
 
 void calc(ofstream& out) {
-	register int counter = 0;
+	long long counter = 0;
 	int length = numbers.size();
 	if (ALG == ALG_STUPID) {
 		for (int i = 0; i < length; i++) {
@@ -89,13 +88,16 @@ void calc(ofstream& out) {
 					int ni = numbers[i];
 					int nj = numbers[j];
 					int nk = numbers[k];
-					if (ni + nj == nk) {
+					if (ni + nj == nk)
+					{
 						counter++;
 					}
-					if (ni + nk == nj) {
+					if (ni + nk == nj)
+					{
 						counter++;
 					}
-					if (nk + nj == ni) {
+					if (nk + nj == ni)
+					{
 						counter++;
 					}
 				}
