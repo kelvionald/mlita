@@ -1,45 +1,64 @@
 ﻿/*
-TASK
+TASKS
 */
 // Автор: Турецкий Сергей ПС-22
 // Среда разработки: Visual Studio 2017
 
 #include "pch.h"
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
 #include <cmath>
 #include <ctime>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
 
 using namespace std;
 
 #define DEV false
+typedef long long int64;
+
+int64 rabbit(int64 N, int64 K)
+{
+	return 0;
+}
+
+void tests()
+{
+
+}
+
+void program(ifstream& in, ofstream& out)
+{
+	int64 N;
+	int64 K;
+	in >> N;
+	in >> K;
+	out << rabbit(N, K);
+}
 
 int main()
 {
-	string line;
-	ifstream in("input.txt");
-	ofstream out("output.txt");
-	if (in.is_open())
+	if (DEV)
 	{
-		getline(in, line);
-		if (DEV) cout << line << endl;
-		try {
-			// line
-		}
-		catch (string s) {
-			cout << "Error: " << s << endl;
-		}
-		catch (char* s) {
-			cout << "Error: " << s << endl;
-		}
-		in.close();
+		tests();
 	}
-	else {
-		cout << "Error open input.txt\n";
+	else
+	{
+		string line;
+		ifstream in("input.txt");
+		ofstream out("output.txt");
+		if (in.is_open())
+		{
+			program(in, out);
+			in.close();
+		}
+		else
+		{
+			cout << "Error open input.txt\n";
+		}
+		out.close();
 	}
-	out.close();
-	if (DEV) system("pause");
+	if (DEV)
+		system("pause");
 	return 0;
 }
