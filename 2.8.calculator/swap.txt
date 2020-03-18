@@ -1,0 +1,12 @@
+
+/*int swapExtremeDigits(int a) {
+	int p = 10;
+	while (a / p > 0) {
+		p *= 10;
+	}
+	p /= 10;
+	int b = (a % 10) * p - (a % 10);
+	b = b + (a / p) - (a / p) * p;
+	b += a;
+	return b;
+}*/

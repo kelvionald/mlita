@@ -16,6 +16,7 @@
 */
 // Автор: Турецкий Сергей ПС-22
 // Среда разработки: Visual Studio 2017
+// Копирайт: https://www.cyberforum.ru/post9400862.html
 
 #include "pch.h"
 #include <cmath>
@@ -28,90 +29,93 @@
 
 using namespace std;
 
-#define DEV true
+#define DEV false
 
-struct bigint
+typedef long long int64_;
+
+const int64_ MAX_SIZE = 4;
+const int64_ BASE = 1000000000;
+
+struct int256
 {
-	static const long long BASE = 1e9;
-	static const long long SIZE = 4;
+	int64_ nums[MAX_SIZE];
 
-	long long digits[SIZE];
-
-	bigint(long long val)
+	int256(int64_ val)
 	{
-		memset(digits, 0, sizeof(long long) * SIZE);
+		memset(nums, 0, sizeof(int64_) * MAX_SIZE);
 		int i = 0;
-		while (val)
+		while (true)
 		{
-			digits[i++] = val % BASE;
+			nums[i++] = val % BASE;
 			val /= BASE;
+			if (!val)
+				break;
 		}
 	}
 
-	void operator+=(const bigint& other)
+	void operator+=(const int256& other)
 	{
-		for (int i = 0; i < SIZE; i++)
-		{ //сначала сложим числа поразрядно,
-			digits[i] += other.digits[i]; //игнорируя переполнения
-		}
-
-		for (int i = 0; i < SIZE - 1; i++)
-		{ //а затем поочередно выполним переносы
-			if (digits[i] >= BASE)
-			{ //для каждого разряда
-				digits[i] -= BASE;
-				digits[i + 1]++;
+		for (int i = 0; i < MAX_SIZE; i++)
+		{
+			nums[i] += other.nums[i];
+			if (nums[i] >= BASE && i < MAX_SIZE - 1)
+			{
+				nums[i] -= BASE;
+				nums[i + 1]++;
 			}
 		}
 	}
 
-	friend ostream& operator<<(ostream& out, const bigint& num)
+	friend ostream& operator<<(ostream& out, const int256& num)
 	{
 		string result;
-
 		char buffer[10];
-
-		for (int i = bigint::SIZE - 1; i >= 0; i--)
+		for (size_t i = 1; i <= MAX_SIZE; i++)
 		{
-			sprintf(buffer, "%09d", num.digits[i]);
+			sprintf(buffer, "%09d", num.nums[MAX_SIZE - i]);
 			result += buffer;
 		}
-
-		int first_idx = result.find_first_not_of('0');
-		if (first_idx == string::npos)
+		string result2;
+		bool isNulls = true;
+		for (size_t i = 0; i < result.size(); i++)
 		{
-			out << "0";
+			if (isNulls)
+			{
+				if (result[i] != '0')
+				{
+					isNulls = false;
+					result2 += result[i];
+				}			
+			}
+			else
+			{
+				result2 += result[i];
+			}
 		}
-		else
-		{
-			out << result.substr(first_idx);
-		}
-
+		out << result2;
 		return out;
 	}
 
 	bool operator==(long long val)
 	{
 		int i = 0;
-		while (val)
+		while (true)
 		{
-			if (digits[i++] != val % BASE)
+			if (nums[i++] != val % BASE)
 			{
 				return false;
 			}
 			val /= BASE;
+			if (!val)
+			{
+				break;
+			}
 		}
 		return true;
 	}
 };
 
-typedef bigint int64;
-
-template <typename T>
-T min(T a, T b)
-{
-	return a < b ? a : b;
-}
+typedef int256 int64;
 
 int64 rabbit(int N, int K, string s = "")
 {
@@ -119,7 +123,8 @@ int64 rabbit(int N, int K, string s = "")
 	for (int i = 2; i <= N; i++)
 	{
 		int lenArr = arr.size();
-		int offset = lenArr - min(K, lenArr);
+		int min = K < lenArr ? K : lenArr;
+		int offset = lenArr - min;
 		int64 s = 0;
 		for (int i = offset; i < arr.size(); i++)
 		{
