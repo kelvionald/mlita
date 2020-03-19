@@ -2,18 +2,19 @@ s = set([1])
 q = [1]
 def swap(a):
     d = str(a)
-    return int(d[-1] + d[1:-2] + d[0])
+    return int(d[-1] + d[1:-1] + d[0])
 
 def add(tata):
-    if (100000 >= tata) and (not (swap(r) in s)):
+    if (100000 >= tata) and (not (tata in s)):
         q.append(tata)
         s.add(tata)
 
 for i in range(0, 1000):
     r = q.pop(0)
-    print(r)
+    #print(r)
     add(r * 2)
     if r > 9:
         add(swap(r))
     if not len(q):
         break
+print(s)
