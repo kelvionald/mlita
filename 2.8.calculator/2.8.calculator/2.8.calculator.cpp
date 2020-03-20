@@ -40,16 +40,12 @@ bool isPossible = false;
 struct row {
 	int num;
 	bool swapped = false;
+	row* parent = nullptr;
+	int deep;
 };
 
-struct row2 {
-	int num;
-	bool swapped = false;
-	row2* parent = nullptr;
-};
-
-queue<row> q;
-queue<row2> q2;
+queue<row*> q;
+row* curr;
 set<int> nums;
 int L;
 int N;
@@ -64,72 +60,67 @@ int swapExtremeDigits(int a) {
 	return a + unit * (p - 1) + div * (1 - p);
 }
 
-void addQ(int num, bool swapped = false) {
-	if (num < L) {
-		q.push({ num, swapped });
-	}
-}
-
-void addQ2(int num, row2* parent, bool swapped = false) {
+void addQ(int num, row* parent, bool swapped = false, int deep = 1) {
 	if (num < L && nums.find(num) == nums.end()) {
 		nums.insert(num);
-		q2.push({ num, swapped, parent });
+		row* local = new row{ num, swapped, parent, deep };
+		q.push(local);
 	}
 }
 
-void calc(int need) {
-	q.push({ 1 });
-	for (int i = 0; i < 10 && q.size(); i++)
+void calc() {
+	isPossible = false;
+	addQ(N, nullptr);
+	while (q.size())
 	{
-		row curr = q.front();
-		cout << " " << curr.num << " " << curr.swapped << endl;
-		if (curr.num == need) {
-			isPossible = true;
-			return;
-		}
+		curr = q.front();
 		q.pop();
-		if (curr.num > 9) {
-			addQ(curr.num * 2);
-			if (!curr.swapped) {
-				addQ(swapExtremeDigits(curr.num), true);
-			}
-		} else {
-			addQ(curr.num * 2);
-		}
-	}
-}
-
-void calc2() {
-	if (N > L) {
-		return;
-	}
-	q2.push({ N });
-	for (int i = 0; q2.size(); i++)
-	{
-		row2 curr = q2.front();
-		q2.pop();
-		cout << curr.num << " " << curr.swapped << endl;
-		if (curr.num == 1) {
+		if (DEV) for (int i = 1; i < curr->deep; i++) cout << ' ';
+		if (DEV) cout << curr->num << " " << curr->swapped << endl;
+		if (curr->num == 1) {
 			isPossible = true;
 			return;
 		}
-		if (curr.num % 2 == 0) {
-			addQ2(curr.num / 2, &curr);
+		if (curr->num % 2 == 0) {
+			addQ(curr->num / 2, curr, false, curr->deep + 1);
 		}
-		if (!curr.swapped) {
-			addQ2(swapExtremeDigits(curr.num), &curr, true);
-		}
-		//swap ?= swap swap
+		//if (curr->num % 10 != 0) {
+			addQ(swapExtremeDigits(curr->num), curr, true, curr->deep + 1);
+		//}
 	}
+}
+
+void showPath(ofstream& out) {
+	cout << curr->deep << endl;
+	out << curr->deep << endl;
+	while (true) {
+		cout << curr->num << " ";
+		out << curr->num << " ";
+		if (curr->parent == nullptr) {
+			break;
+		}
+		curr = curr->parent;
+	}
+	cout << endl;
+	out << endl;
 }
 
 int main()
 {
 	ifstream in("input.txt");
+	ofstream out("output.txt");
 	in >> L;
 	in >> N;
-	//calc(N);
-	calc2();
-	cout << (isPossible ? "Yes" : "No") << endl;
+	calc();
+	if (isPossible) {
+		cout << "Yes" << endl;
+		out << "Yes" << endl;
+		showPath(out);
+	} else {
+		cout << "No" << endl;
+		out << "No" << endl;
+	}
+	in.close();
+	out.close();
 	if (DEV) system("pause");
 }
