@@ -30,10 +30,11 @@
 #include <queue>
 #include <map>
 #include <set>
+#include <stack>
 
 using namespace std;
 
-#define DEV 1
+#define DEV 0
 
 bool isPossible = false;
 
@@ -45,23 +46,30 @@ struct row {
 };
 
 queue<row*> q;
-row* curr;
+row* curr = nullptr;
 set<int> nums;
 int L;
 int N;
 
 int swapExtremeDigits(int a) {
 	int p = 10;
-	while (a / p > 10) {
+	while (a / p > 0) {
 		p *= 10;
 	}
+	p /= 10;
 	int unit = a % 10;
 	int div = a / p;
 	return a + unit * (p - 1) + div * (1 - p);
 }
 
-void addQ(int num, row* parent, bool swapped = false, int deep = 1) {
-	if (num < L && nums.find(num) == nums.end()) {
+
+
+void addQ(int num, row* parent = nullptr, bool swapped = false, int deep = 1) {
+	if (num == N) {
+		isPossible = true;
+		throw exception("1");
+	}
+	if (num <= L && nums.find(num) == nums.end()) {
 		nums.insert(num);
 		row* local = new row{ num, swapped, parent, deep };
 		q.push(local);
@@ -70,36 +78,40 @@ void addQ(int num, row* parent, bool swapped = false, int deep = 1) {
 
 void calc() {
 	isPossible = false;
-	addQ(N, nullptr);
+	addQ(1);
 	while (q.size())
 	{
 		curr = q.front();
 		q.pop();
-		if (DEV) for (int i = 1; i < curr->deep; i++) cout << ' ';
-		if (DEV) cout << curr->num << " " << curr->swapped << endl;
-		if (curr->num == 1) {
+		//if (DEV) for (int i = 1; i < curr->deep; i++) cout << ' ';
+		//if (DEV) cout << (curr->parent != nullptr ? curr->parent->num : 1) << "-" << curr->num << " " << endl;
+		if (curr->num == N) {
 			isPossible = true;
 			return;
 		}
-		if (curr->num % 2 == 0) {
-			addQ(curr->num / 2, curr, false, curr->deep + 1);
-		}
-		//if (curr->num % 10 != 0) {
+		addQ(curr->num * 2, curr, false, curr->deep + 1);
+		if (curr->num > 9)
 			addQ(swapExtremeDigits(curr->num), curr, true, curr->deep + 1);
-		//}
 	}
 }
 
 void showPath(ofstream& out) {
+	curr->deep++;
 	cout << curr->deep << endl;
 	out << curr->deep << endl;
+	stack <int> st;
+	st.push(N);
 	while (true) {
-		cout << curr->num << " ";
-		out << curr->num << " ";
+		st.push(curr->num);
 		if (curr->parent == nullptr) {
 			break;
 		}
 		curr = curr->parent;
+	}
+	while (!st.empty()) {
+		cout << st.top() << " ";
+		out << st.top() << " ";
+		st.pop();
 	}
 	cout << endl;
 	out << endl;
@@ -111,11 +123,20 @@ int main()
 	ofstream out("output.txt");
 	in >> L;
 	in >> N;
-	calc();
+	try {
+		calc();
+	}
+	catch (exception ex) {}
 	if (isPossible) {
 		cout << "Yes" << endl;
 		out << "Yes" << endl;
-		showPath(out);
+		if (N == 1) {
+			cout << "1\n1\n";
+			out << "1\n1\n";
+		}
+		else {
+			showPath(out);
+		}
 	} else {
 		cout << "No" << endl;
 		out << "No" << endl;
