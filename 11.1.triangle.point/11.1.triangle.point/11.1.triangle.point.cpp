@@ -51,6 +51,20 @@ num square(coord a, coord b, coord c) {
 	return 0.5 * abs((b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y));
 }
 
+num check(coord a, coord b, coord p) {
+	return p.x * (b.y - a.y) + p.y * (a.x - b.x) + a.y * b.x - a.x * b.y;
+}
+
+bool solve(coord a, coord b, coord c, coord p) {
+	bool c1 = check(a, b, p);
+	bool c2 = check(b, c, p);
+	bool c3 = check(c, a, p);
+	cout << c1 << " ";
+	cout << c2 << " ";
+	cout << c3 << " ";
+	return c1 >= 0 && c2 >= 0 && c3 >= 0 || c1 <= 0 && c2 <= 0 && c3 <= 0;
+}
+
 int main()
 {
 	ifstream in("input.txt");
@@ -62,22 +76,15 @@ int main()
 
 	coord p = read_coord(in);
 
-	num s_triangle = square(a, b, c);
-	num s_triangle_1 = square(a, b, p);
-	num s_triangle_2 = square(a, p, c);
-	num s_triangle_3 = square(p, b, c);
-
-	num result = s_triangle_1 + s_triangle_2 + s_triangle_3 - s_triangle;
-	cout << result << endl;
-
-	if (result < 0.001) {
+	if (solve(a, b, c, p)) {
 		out << "In";
+		cout << "In";
 	}
 	else {
 		out << "Out";
+		cout << "Out";
 	}
 
 	in.close();
 	out.close();
-	system("pause");
 }
