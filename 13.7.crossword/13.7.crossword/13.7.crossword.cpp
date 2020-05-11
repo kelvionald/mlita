@@ -42,7 +42,7 @@
 
 using namespace std;
 
-const bool dev = true;
+const bool dev = false;
 
 struct pair_
 {
@@ -57,9 +57,10 @@ struct case_
 
 typedef vector<pair_> pairs;
 
-void prt(pairs p)
+void prt(pairs p, int pp)
 {
-	if (dev) cout << "'\n";
+	if (dev)
+		cout << pp << "'\n";
 	for (size_t i = 0; i < p.size(); i++)
 	{
 		if (dev) cout << " " << p[i].hi << " " << p[i].vi << " " << p[i].ch << endl;
@@ -119,17 +120,31 @@ bbbbb
   c d
 */
 
-inline bool checkExists(pair_& ac, pair_& ad, pair_& bc, pair_& bd)
+inline bool checkExists2(pair_& p1, pair_& p3, pair_& p2, pair_& p4)
 {
-	return ad.hi - ac.hi == bd.hi - bc.hi && bc.vi - ac.vi == bd.vi - ad.vi;
+	return p3.vi - p1.vi == p4.vi - p2.vi && p2.hi - p1.hi == p4.hi - p3.hi;
 }
 
+inline bool checkExists(pair_& p1, pair_& p3, pair_& p2, pair_& p4)
+{
+	return p3.hi - p1.hi == p4.hi - p2.hi && p2.vi - p1.vi == p4.vi - p3.vi;
+	//&p3.hi - p1.hi != 0 && p2.vi - p1.vi != 0;
+}
+
+/*
+  c d
+ aaaaa
+  c d
+bbbbb
+  c d
+*/
+
 inline int getSize(
-	pair_& ac, pair_& ad, pair_& bc, pair_& bd,
+	pair_& p1, pair_& p3, pair_& p2, pair_& p4,
 	string& a, string& b, string& c, string& d)
 {
-	int width = calcSize(ac.hi, bc.hi, a.size(), b.size());
-	int height = calcSize(ad.vi, ad.vi, c.size(), d.size());
+	int width = calcSize(p1.hi, p2.hi, a.size(), b.size());
+	int height = calcSize(p1.vi, p3.vi, c.size(), d.size());
 	/*if (dev) cout << "width: " << width << endl;
 	if (dev) cout << "height: " << height << endl;
 	if (dev) cout << " " << ac.hi << " " << bc.hi << endl;
@@ -148,44 +163,45 @@ void form(string a, string b, string c, string d)
 	pairs bc = find_collisions(b, c);
 	pairs bd = find_collisions(b, d);
 
-	/*prt(ac);
-	prt(ad);
-	prt(bc);
-	prt(bd);*/
+	prt(ac, 1);
+	prt(bc, 2);
+	prt(ad, 3);
+	prt(bd, 4);
 
 	for (int i = 0; i < ac.size(); i++)
 	{
-		pair_ ac_ = ac[i];
+		pair_ p1 = ac[i];
 		for (int j = 0; j < ad.size(); j++)
 		{
-			pair_ ad_ = ad[j];
-			if (!(ac_.vi < ad_.vi))
+			pair_ p3 = ad[j];
+			if (!(p1.hi < p3.hi))
 				continue;
 
 			for (int k = 0; k < bc.size(); k++)
 			{
-				pair_ bc_ = bc[k];
-				if (!(ac_.hi < bc_.hi))
+				pair_ p2 = bc[k];
+				//cout << "__" << !(p1.hi < p2.hi) << p1.hi << p2.hi << endl;
+				if (!(p1.vi < p2.vi))
 					continue;
 
 				for (int m = 0; m < bd.size(); m++)
 				{
-					pair_ bd_ = bd[m];
-					if (!(ad_.hi < bd_.hi) || !(bc_.vi < bd_.vi))
+					pair_ p4 = bd[m];
+					if (!(p3.vi < p4.vi) || !(p2.hi < p4.hi))
 						continue;
 
-					if (!checkExists(ac_, ad_, bc_, bd_))
+					if (!checkExists(p1, p3, p2, p4)) 
 						continue;
 
-					int size = getSize(ac_, ad_, bc_, bd_, a, b, c, d);
+					int size = getSize(p1, p3, p2, p4, a, b, c, d);
 					if (minSize == -1 || minSize > size)
 					{
 						minSize = size;
 						cases = {
-							ac_,
-							ad_,
-							bc_,
-							bd_
+							p1,
+							p3,
+							p2,
+							p4
 						};
 					}
 
@@ -193,25 +209,25 @@ void form(string a, string b, string c, string d)
 					{
 
 						cout << "*" << endl;
-						cout << ac_.vi << " "
-							 << ad_.vi << " "
-							 << ac_.ch << " "
-							 << ad_.ch << " "
+						cout << p1.vi << " "
+							 << p3.vi << " "
+							 << p1.ch << " "
+							 << p3.ch << " "
 
-							 << ac_.hi << " "
-							 << bc_.hi << " "
-							 << ac_.ch << " "
-							 << bc_.ch << " "
+							 << p1.hi << " "
+							 << p2.hi << " "
+							 << p1.ch << " "
+							 << p2.ch << " "
 
-							 << ad_.hi << " "
-							 << bd_.hi << " "
-							 << ad_.ch << " "
-							 << bd_.ch << " "
+							 << p3.hi << " "
+							 << p4.hi << " "
+							 << p3.ch << " "
+							 << p4.ch << " "
 
-							 << bc_.hi << " "
-							 << bd_.hi << " "
-							 << bc_.ch << " "
-							 << bd_.ch << " "
+							 << p2.hi << " "
+							 << p4.hi << " "
+							 << p2.ch << " "
+							 << p4.ch << " "
 
 							 << endl;
 					}
@@ -392,6 +408,23 @@ string join(const vector<char>& vec)
 void makeTests() {
 	ofstream out("tmp.txt");
 	charMatrix cm;
+
+	cm = makeAnswer("FMPULA", "STAPE", "LUFAS", "AMPER", out);
+	cout << cm.size();
+	assert(cm.size() == 5);
+	assert(cm[0].size() == 8);
+	assert(join(cm[0]) == "**L*A***");
+	assert(join(cm[1]) == "**U*M***");
+	assert(join(cm[2]) == "**FMPULA");
+	assert(join(cm[3]) == "STAPE***");
+
+	cm = makeAnswer("SUP", "LIS", "SID", "US", out);
+	cout << cm.size();
+	assert(cm.size() == 3);
+	assert(cm[0].size() == 4);
+	assert(join(cm[0]) == "*SUP");
+	assert(join(cm[1]) == "LIS*");
+	assert(join(cm[2]) == "*D**");
 
 	cm = makeAnswer("STAMPING", "FORMULA", "STOP", "SPELING", out);
 	assert(cm.size() == 7);
