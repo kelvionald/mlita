@@ -39,6 +39,8 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <sstream>
+#include <cassert>
 
 using namespace std;
 
@@ -100,7 +102,7 @@ inline bool checkNodes(Outputs& outputs)
 	return true;
 }
 
-inline void initial_walk(Inputs& inputs, Outputs& outputs, vector<int>& start_doctors, ofstream& out)
+inline void initial_walk(Inputs& inputs, Outputs& outputs, vector<int>& start_doctors, ostream& out)
 {
 	path.clear();
 	for (int i = 0; i < start_doctors.size(); i++)
@@ -116,14 +118,11 @@ inline void initial_walk(Inputs& inputs, Outputs& outputs, vector<int>& start_do
 			}
 			return;
 		}
-		else
-		{
-			out << "NO\n";
-		}
 	}
+	out << "NO\n";
 }
 
-void program(ifstream& in, ofstream& out)
+void program(istream& in, ostream& out)
 {
 	in >> doctor_count;
 	Inputs inputs;
@@ -153,13 +152,38 @@ void program(ifstream& in, ofstream& out)
 	initial_walk(inputs, outputs, start_doctors, out);
 }
 
+void makeTest(string input, string expect) {
+	istringstream in(input);
+	ostringstream out;
+	program(in, out);
+	string actual = out.str();
+	cout << "_" << actual << endl;
+	assert(actual == expect);
+}
+
+void tests()
+{
+	makeTest("4\n1 2\n0\n2 1 4\n1 1", "YES\n2\n1\n4\n3\n");
+	makeTest("3\n0\n0\n2 1 2", "YES\n1\n2\n3\n");
+	makeTest("3\n0\n1 1\n1 1", "YES\n1\n2\n3\n");
+	makeTest("4\n1 4\n1 1\n1 2\n1 3", "NO\n");
+	makeTest("5\n0\n1 1\n1 2\n2 1 3\n1 3", "YES\n1\n2\n3\n5\n4\n");
+}
+
 int main()
 {
-	string line;
-	ifstream in("input.txt");
-	ofstream out("output.txt");
-	program(in, out);
-	in.close();
-	out.close();
+	if (DEV)
+	{
+		tests();
+	}
+	else
+	{
+		string line;
+		ifstream in("input.txt");
+		ofstream out("output.txt");
+		program(in, out);
+		in.close();
+		out.close();
+	}
 	return 0;
 }
