@@ -2,7 +2,7 @@
 TASKS
 */
 // Автор: Турецкий Сергей ПС-22
-// Среда разработки: Visual Studio 2017
+// Среда разработки: Visual Studio 2019
 
 #include "pch.h"
 #include <cmath>
