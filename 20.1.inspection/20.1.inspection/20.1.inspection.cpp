@@ -63,7 +63,7 @@ void deepshow(int deep)
 	}
 }
 
-void base_walk(Inputs& inputs, Outputs& outputs, int index,int deep = 0)
+void base_walk(Inputs& inputs, Outputs& outputs, int index, int deep = 0)
 {
 	if (DEV)
 	{
@@ -109,15 +109,15 @@ inline void initial_walk(Inputs& inputs, Outputs& outputs, vector<int>& start_do
 	{
 		int index = start_doctors[i];
 		base_walk(inputs, outputs, index);
-		if (checkNodes(outputs))
+	}
+	if (checkNodes(outputs))
+	{
+		out << "YES\n";
+		for (int i = 0; i < path.size(); i++)
 		{
-			out << "YES\n";
-			for (int i = 0; i < path.size(); i++)
-			{
-				out << path[i] + 1 << endl;
-			}
-			return;
+			out << path[i] + 1 << endl;
 		}
+		return;
 	}
 	out << "NO\n";
 }
@@ -168,6 +168,7 @@ void tests()
 	makeTest("3\n0\n1 1\n1 1", "YES\n1\n2\n3\n");
 	makeTest("4\n1 4\n1 1\n1 2\n1 3", "NO\n");
 	makeTest("5\n0\n1 1\n1 2\n2 1 3\n1 3", "YES\n1\n2\n3\n5\n4\n");
+	makeTest("5\n0\n1 3\n0\n1 1\n0", "YES\n1\n4\n3\n2\n5\n");
 }
 
 int main()
